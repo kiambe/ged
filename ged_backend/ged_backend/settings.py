@@ -88,8 +88,8 @@ WSGI_APPLICATION = 'ged_backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ged_db',
-        'USER': 'ged_user',
+        'NAME': 'ged_db2',
+        'USER': 'ged_user2',
         'PASSWORD': 'G34iN47iCA@2063',
         'HOST': 'localhost',
         'PORT': '5432',
