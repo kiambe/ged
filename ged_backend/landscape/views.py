@@ -81,34 +81,34 @@ class GedDataAPI(APIView):
         countries = Country.objects.all()
         organizations = Organization.objects.all()
         regulatory_frameworks = RegulatoryFramework.objects.all()
-        ged_organisms = GedOrganism.objects.all()
+        #ged_organisms = GedOrganism.objects.all()
         abstracts = Abstract.objects.all()
-        development_stages = DevelopmentStage.objects.all()
+        #development_stages = DevelopmentStage.objects.all()
         funding_sources = FundingSource.objects.all()
         human_capacities = HumanCapacity.objects.all()
-        equipements = Equipement.objects.all()
+        #equipements = Equipement.objects.all()
         projects = Project.objects.all()
         project_fundings = ProjectFunding.objects.all()
         project_organisms = ProjectOrganism.objects.all()
         country_ged_organisms = CountryGedOrganism.objects.all()
-        literatures = Literature.objects.all()
+        #literatures = Literature.objects.all()
 
         # Serialize all data
         data = {
             'countries': CountrySerializer(countries, many=True).data,
             'organizations': OrganizationSerializer(organizations, many=True).data,
             'regulatory_frameworks': RegulatoryFrameworkSerializer(regulatory_frameworks, many=True).data,
-            'ged_organisms': GedOrganismSerializer(ged_organisms, many=True).data,
+            #'ged_organisms': GedOrganismSerializer(ged_organisms, many=True).data,
             'abstracts': AbstractSerializer(abstracts, many=True).data,
-            'development_stages': DevelopmentStageSerializer(development_stages, many=True).data,
+           # 'development_stages': DevelopmentStageSerializer(development_stages, many=True).data,
             'funding_sources': FundingSourceSerializer(funding_sources, many=True).data,
             'human_capacities': HumanCapacitySerializer(human_capacities, many=True).data,
-            'equipements': EquipementSerializer(equipements, many=True).data,
+           # 'equipements': EquipementSerializer(equipements, many=True).data,
             'projects': ProjectSerializer(projects, many=True).data,
             'project_fundings': ProjectFundingSerializer(project_fundings, many=True).data,
             'project_organisms': ProjectOrganismSerializer(project_organisms, many=True).data,
             'country_ged_organisms': CountryGedOrganismSerializer(country_ged_organisms, many=True).data,
-            'literatures': LiteratureSerializer(literatures, many=True).data,
+            #'literatures': LiteratureSerializer(literatures, many=True).data,
         }
 
         return Response(data, status=status.HTTP_200_OK)

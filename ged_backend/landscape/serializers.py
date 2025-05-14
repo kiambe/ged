@@ -4,7 +4,8 @@ from .models import *
 class CountrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Country
-        fields = '__all__'
+        #fields = '__all__'
+        fields = ['name', 'country_code', 'region']
 
 class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:

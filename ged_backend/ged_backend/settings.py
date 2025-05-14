@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-qxeemf%u$m*a#c@gan(qdx67b9dxq6!)2^afwci3h@#zkav#&c
 DEBUG = True
 
 #ALLOWED_HOSTS = ["*"]
-ALLOWED_HOSTS = ['data.genome.africa', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['data.genome.africa', 'data.genome.africa:3000','localhost', 'localhost:3000', '127.0.0.1', '127.0.0.1:3000']
 #CORS_ALLOWED_ORIGINS = ["https://data.genome.africa",  "http://data.genome.africa"]
 
 # Application definition
