@@ -1,85 +1,83 @@
 from rest_framework import serializers
 from .models import *
 
-class CountrySerializer(serializers.ModelSerializer):
+class CountryBasicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Country
-        fields = '__all__'
+        fields = ['name', 'country_code', 'region']
 
-class GedOrganismSerializer(serializers.ModelSerializer):
+class GedOrganismBasicSerializer(serializers.ModelSerializer):
     class Meta:
         model = GedOrganism
         fields = '__all__'
 
-class DevelopmentStageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DevelopmentStage
-        fields = '__all__'
-
-class EquipementSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Equipement
-        fields = '__all__'
-
-class OrganizationSerializer(serializers.ModelSerializer):
-    country_code = serializers.CharField(source='country.country_code', read_only=True)
-    country = CountrySerializer(read_only=True)
-    
-    class Meta:
-        model = Organization
-        fields = '__all__'
-
-class RegulatoryFrameworkSerializer(serializers.ModelSerializer):
-    country_code = serializers.CharField(source='country.country_code', read_only=True)
-    country = CountrySerializer(read_only=True)
-    
-    class Meta:
-        model = RegulatoryFramework
-        fields = '__all__'
-
 class AbstractSerializer(serializers.ModelSerializer):
-    country_code = serializers.CharField(source='country.country_code', read_only=True)
-    country = CountrySerializer(read_only=True)
-    
     class Meta:
         model = Abstract
         fields = '__all__'
 
 class FundingSourceSerializer(serializers.ModelSerializer):
-    country_code = serializers.CharField(source='country.country_code', read_only=True)
-    country = CountrySerializer(read_only=True)
-    
     class Meta:
         model = FundingSource
         fields = '__all__'
 
+
+class DevelopmentStageBasicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DevelopmentStage
+        fields = '__all__'
+
 class HumanCapacitySerializer(serializers.ModelSerializer):
-    country_code = serializers.CharField(source='country.country_code', read_only=True)
-    country = CountrySerializer(read_only=True)
-    
     class Meta:
         model = HumanCapacity
         fields = '__all__'
 
+
+
+class EquipementBasicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Equipement
+        fields = '__all__'
+
+class OrganizationBasicSerializer(serializers.ModelSerializer):
+    country_code = serializers.CharField(source='country.country_code', read_only=True)
+    
+    class Meta:
+        model = Organization
+        fields = '__all__'
+
+class RegulatoryFrameworkBasicSerializer(serializers.ModelSerializer):
+    country_code = serializers.CharField(source='country.country_code', read_only=True)
+    
+    class Meta:
+        model = RegulatoryFramework
+        fields = '__all__'
+
+class ProjectBasicSerializer(serializers.ModelSerializer):
+    country_code = serializers.CharField(source='country.country_code', read_only=True)
+    
+    class Meta:
+        model = Project
+        fields = '__all__'
+
+# Main serializers with relationships
+class CountrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Country
+        fields = '__all__'
+        depth = 1
+
+class OrganizationSerializer(serializers.ModelSerializer):
+    country_code = serializers.CharField(source='country.country_code', read_only=True)
+    country = CountryBasicSerializer(read_only=True)
+    
+    class Meta:
+        model = Organization
+        fields = '__all__'
+
 class ProjectSerializer(serializers.ModelSerializer):
     country_code = serializers.CharField(source='country.country_code', read_only=True)
-    country = CountrySerializer(read_only=True)
-    organizations = serializers.SerializerMethodField()
-    fundings = serializers.SerializerMethodField()
-    organisms = serializers.SerializerMethodField()
-    
-    def get_organizations(self, obj):
-        fundings = ProjectFunding.objects.filter(project=obj)
-        orgs = [funding.organization_funding for funding in fundings]
-        return OrganizationSerializer(orgs, many=True).data
-    
-    def get_fundings(self, obj):
-        fundings = ProjectFunding.objects.filter(project=obj)
-        return ProjectFundingSerializer(fundings, many=True).data
-    
-    def get_organisms(self, obj):
-        organisms = ProjectOrganism.objects.filter(project=obj)
-        return ProjectOrganismSerializer(organisms, many=True).data
+    country = CountryBasicSerializer(read_only=True)
     
     class Meta:
         model = Project
@@ -87,8 +85,8 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 class ProjectFundingSerializer(serializers.ModelSerializer):
     country_code = serializers.CharField(source='project.country.country_code', read_only=True)
-    project = ProjectSerializer(read_only=True)
-    organization_funding = OrganizationSerializer(read_only=True)
+    project = ProjectBasicSerializer(read_only=True)
+    organization_funding = OrganizationBasicSerializer(read_only=True)
     
     class Meta:
         model = ProjectFunding
@@ -96,10 +94,10 @@ class ProjectFundingSerializer(serializers.ModelSerializer):
 
 class ProjectOrganismSerializer(serializers.ModelSerializer):
     country_code = serializers.CharField(source='project.country.country_code', read_only=True)
-    project = ProjectSerializer(read_only=True)
-    organism = GedOrganismSerializer(read_only=True)
-    technology = EquipementSerializer(read_only=True)
-    development_stage = DevelopmentStageSerializer(read_only=True)
+    project = ProjectBasicSerializer(read_only=True)
+    organism = GedOrganismBasicSerializer(read_only=True)
+    technology = EquipementBasicSerializer(read_only=True)
+    development_stage = DevelopmentStageBasicSerializer(read_only=True)
     
     class Meta:
         model = ProjectOrganism
@@ -107,17 +105,9 @@ class ProjectOrganismSerializer(serializers.ModelSerializer):
 
 class CountryGedOrganismSerializer(serializers.ModelSerializer):
     country_code = serializers.CharField(source='country.country_code', read_only=True)
-    country = CountrySerializer(read_only=True)
-    ged_organism = GedOrganismSerializer(read_only=True)
+    country = CountryBasicSerializer(read_only=True)
+    ged_organism = GedOrganismBasicSerializer(read_only=True)
     
     class Meta:
         model = CountryGedOrganism
-        fields = '__all__'
-
-class LiteratureSerializer(serializers.ModelSerializer):
-    country_code = serializers.CharField(source='country.country_code', read_only=True)
-    country = CountrySerializer(read_only=True)
-    
-    class Meta:
-        model = Literature
         fields = '__all__'

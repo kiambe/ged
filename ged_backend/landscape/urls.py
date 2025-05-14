@@ -15,7 +15,7 @@ router.register(r'projects', views.ProjectViewSet)
 router.register(r'project-fundings', views.ProjectFundingViewSet)
 router.register(r'project-organisms', views.ProjectOrganismViewSet)
 router.register(r'country-ged-organisms', views.CountryGedOrganismViewSet)
-router.register(r'literature', views.LiteratureViewSet)
+# router.register(r'literature', views.LiteratureViewSet)
 router.register(r'abstract', views.AbstractViewSet)
 
 
