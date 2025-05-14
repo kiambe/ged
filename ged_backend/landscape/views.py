@@ -75,7 +75,7 @@ class LiteratureViewSet(viewsets.ModelViewSet):
     serializer_class = LiteratureSerializer
     filterset_fields = ['country']
 
-class GedDataAPI(APIView):
+class GedDataAPI2(APIView):
     def get(self, request, format=None):
         # Get all data from each model
         countries = Country.objects.all()
@@ -114,32 +114,60 @@ class GedDataAPI(APIView):
         return Response(data, status=status.HTTP_200_OK)
     
 
-
-class GedDataByCountryAPI(APIView):
+class GedDataAPI(APIView):
     def get(self, request, format=None):
-        countries = Country.objects.all()
-        data = []
-        
-        for country in countries:
-            country_data = {
-                'country': CountrySerializer(country).data,
-                'abstract': AbstractSerializer(country.abstract_set.first()).data if country.abstract_set.exists() else None,
-                'organizations': OrganizationSerializer(country.organization_set.all(), many=True).data,
-                'regulatory_frameworks': RegulatoryFrameworkSerializer(country.regulatoryframework_set.all(), many=True).data,
-                'funding_sources': FundingSourceSerializer(country.fundingsource_set.all(), many=True).data,
-                'human_capacity': HumanCapacitySerializer(country.humancapacity_set.first()).data if country.humancapacity_set.exists() else None,
-                'projects': ProjectSerializer(country.project_set.all(), many=True).data,
-                'country_ged_organisms': CountryGedOrganismSerializer(country.countrygedorganism_set.all(), many=True).data,
-                'literatures': LiteratureSerializer(country.literature_set.all(), many=True).data,
-            }
-            data.append(country_data)
-        
-        # Add non-country-specific data
-        response_data = {
-            'by_country': data,
-            'ged_organisms': GedOrganismSerializer(GedOrganism.objects.all(), many=True).data,
-            'development_stages': DevelopmentStageSerializer(DevelopmentStage.objects.all(), many=True).data,
-            'equipements': EquipementSerializer(Equipement.objects.all(), many=True).data,
+        # Get all data with complete nested relationships
+        data = {
+            'countries': Country.objects.all(),
+            'organizations': Organization.objects.all(),
+            'regulatory_frameworks': RegulatoryFramework.objects.all(),
+            'ged_organisms': GedOrganism.objects.all(),
+            'abstracts': Abstract.objects.all(),
+            'development_stages': DevelopmentStage.objects.all(),
+            'funding_sources': FundingSource.objects.all(),
+            'human_capacities': HumanCapacity.objects.all(),
+            'equipements': Equipement.objects.all(),
+            'projects': Project.objects.all(),
+            'project_fundings': ProjectFunding.objects.all(),
+            'project_organisms': ProjectOrganism.objects.all(),
+            'country_ged_organisms': CountryGedOrganism.objects.all(),
+            'literatures': Literature.objects.all(),
         }
-        
-        return Response(response_data, status=status.HTTP_200_OK)
+
+        # Serialize all data with prefetch_related and select_related for performance
+        serialized_data = {
+            'countries': CountrySerializer(data['countries'], many=True).data,
+            'organizations': OrganizationSerializer(
+                data['organizations'].select_related('country'), many=True).data,
+            'regulatory_frameworks': RegulatoryFrameworkSerializer(
+                data['regulatory_frameworks'].select_related('country'), many=True).data,
+            # 'ged_organisms': GedOrganismSerializer(data['ged_organisms'], many=True).data,
+            'abstracts': AbstractSerializer(
+                data['abstracts'].select_related('country'), many=True).data,
+            'development_stages': DevelopmentStageSerializer(
+                data['development_stages'], many=True).data,
+            'funding_sources': FundingSourceSerializer(
+                data['funding_sources'].select_related('country'), many=True).data,
+            'human_capacities': HumanCapacitySerializer(
+                data['human_capacities'].select_related('country'), many=True).data,
+            'equipements': EquipementSerializer(data['equipements'], many=True).data,
+            'projects': ProjectSerializer(
+                data['projects'].select_related('country')
+                .prefetch_related('projectorganism_set', 'projectfunding_set'), 
+                many=True).data,
+            'project_fundings': ProjectFundingSerializer(
+                data['project_fundings'].select_related(
+                    'project', 'organization_funding', 'project__country'), 
+                many=True).data,
+            'project_organisms': ProjectOrganismSerializer(
+                data['project_organisms'].select_related(
+                    'project', 'organism', 'technology', 'development_stage', 'project__country'),
+                many=True).data,
+            'country_ged_organisms': CountryGedOrganismSerializer(
+                data['country_ged_organisms'].select_related('country', 'ged_organism'), 
+                many=True).data,
+            # 'literatures': LiteratureSerializer(
+            #     data['literatures'].select_related('country'), many=True).data,
+        }
+
+        return Response(serialized_data, status=status.HTTP_200_OK)
