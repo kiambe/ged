@@ -1,10 +1,10 @@
 from django.shortcuts import render
 
-# Create your views here.
 from rest_framework import viewsets
-#from rest_framework.views import APIView
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+
 from .models import *
 from .serializers import *
 
@@ -75,20 +75,71 @@ class LiteratureViewSet(viewsets.ModelViewSet):
     serializer_class = LiteratureSerializer
     filterset_fields = ['country']
 
+class GedDataAPI(APIView):
+    def get(self, request, format=None):
+        # Get all data from each model
+        countries = Country.objects.all()
+        organizations = Organization.objects.all()
+        regulatory_frameworks = RegulatoryFramework.objects.all()
+        ged_organisms = GedOrganism.objects.all()
+        abstracts = Abstract.objects.all()
+        development_stages = DevelopmentStage.objects.all()
+        funding_sources = FundingSource.objects.all()
+        human_capacities = HumanCapacity.objects.all()
+        equipements = Equipement.objects.all()
+        projects = Project.objects.all()
+        project_fundings = ProjectFunding.objects.all()
+        project_organisms = ProjectOrganism.objects.all()
+        country_ged_organisms = CountryGedOrganism.objects.all()
+        literatures = Literature.objects.all()
 
-class CombinedDataViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    A ViewSet that provides combined country data.
-    """
-    queryset = Country.objects.all()
-    serializer_class = CombinedCountryDataSerializer
+        # Serialize all data
+        data = {
+            'countries': CountrySerializer(countries, many=True).data,
+            'organizations': OrganizationSerializer(organizations, many=True).data,
+            'regulatory_frameworks': RegulatoryFrameworkSerializer(regulatory_frameworks, many=True).data,
+            'ged_organisms': GedOrganismSerializer(ged_organisms, many=True).data,
+            'abstracts': AbstractSerializer(abstracts, many=True).data,
+            'development_stages': DevelopmentStageSerializer(development_stages, many=True).data,
+            'funding_sources': FundingSourceSerializer(funding_sources, many=True).data,
+            'human_capacities': HumanCapacitySerializer(human_capacities, many=True).data,
+            'equipements': EquipementSerializer(equipements, many=True).data,
+            'projects': ProjectSerializer(projects, many=True).data,
+            'project_fundings': ProjectFundingSerializer(project_fundings, many=True).data,
+            'project_organisms': ProjectOrganismSerializer(project_organisms, many=True).data,
+            'country_ged_organisms': CountryGedOrganismSerializer(country_ged_organisms, many=True).data,
+            'literatures': LiteratureSerializer(literatures, many=True).data,
+        }
+
+        return Response(data, status=status.HTTP_200_OK)
     
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+
+
+class GedDataByCountryAPI(APIView):
+    def get(self, request, format=None):
+        countries = Country.objects.all()
+        data = []
+        
+        for country in countries:
+            country_data = {
+                'country': CountrySerializer(country).data,
+                'abstract': AbstractSerializer(country.abstract_set.first()).data if country.abstract_set.exists() else None,
+                'organizations': OrganizationSerializer(country.organization_set.all(), many=True).data,
+                'regulatory_frameworks': RegulatoryFrameworkSerializer(country.regulatoryframework_set.all(), many=True).data,
+                'funding_sources': FundingSourceSerializer(country.fundingsource_set.all(), many=True).data,
+                'human_capacity': HumanCapacitySerializer(country.humancapacity_set.first()).data if country.humancapacity_set.exists() else None,
+                'projects': ProjectSerializer(country.project_set.all(), many=True).data,
+                'country_ged_organisms': CountryGedOrganismSerializer(country.countrygedorganism_set.all(), many=True).data,
+                'literatures': LiteratureSerializer(country.literature_set.all(), many=True).data,
+            }
+            data.append(country_data)
+        
+        # Add non-country-specific data
+        response_data = {
+            'by_country': data,
+            'ged_organisms': GedOrganismSerializer(GedOrganism.objects.all(), many=True).data,
+            'development_stages': DevelopmentStageSerializer(DevelopmentStage.objects.all(), many=True).data,
+            'equipements': EquipementSerializer(Equipement.objects.all(), many=True).data,
+        }
+        
+        return Response(response_data, status=status.HTTP_200_OK)

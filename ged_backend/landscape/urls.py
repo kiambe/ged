@@ -17,9 +17,11 @@ router.register(r'project-organisms', views.ProjectOrganismViewSet)
 router.register(r'country-ged-organisms', views.CountryGedOrganismViewSet)
 router.register(r'literature', views.LiteratureViewSet)
 router.register(r'abstract', views.AbstractViewSet)
-router.register(r'combined-data', views.CombinedDataViewSet)
+
 
 urlpatterns = [
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls')),
+    path('ged-data/', views.GedDataAPI.as_view(), name='ged-data-api'),
+    path('ged-country-data/', views.GedDataByCountryAPI.as_view(), name='ged-counytry-data-api'),
 ]
