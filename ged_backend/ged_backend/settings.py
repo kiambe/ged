@@ -28,7 +28,7 @@ DEBUG = True
 
 #ALLOWED_HOSTS = ["*"]
 ALLOWED_HOSTS = ['data.genome.africa', 'data.genome.africa:3000','localhost', 'localhost:3000', '127.0.0.1', '127.0.0.1:3000']
-#CORS_ALLOWED_ORIGINS = ["https://data.genome.africa",  "http://data.genome.africa"]
+CORS_ALLOWED_ORIGINS = ['https://data.genome.africa', 'http://localhost:3000', 'https://localhost:3000', 'https://data.genome.africa:3000', "http://data.genome.africa", 'http://data.genome.africa:3000',]
 
 # Application definition
 
