@@ -19,7 +19,7 @@ class CountryViewSet(viewsets.ModelViewSet):
         Prefetch('project_set', queryset=Project.objects.all()),
         Prefetch('countrygedorganism_set', queryset=CountryGedOrganism.objects.all()),
         'literature_set'
-    ).select_related('abstract', 'humancapacity')
+    ).select_related('abstract')
     serializer_class = CountrySerializer
     filterset_fields = ['region']
 
@@ -96,7 +96,8 @@ class GedDataAPI(APIView):
             Prefetch('project_set', queryset=Project.objects.all()),
             Prefetch('countrygedorganism_set', queryset=CountryGedOrganism.objects.all()),
             'literature_set'
-        ).select_related('abstract', 'humancapacity')
+        ).select_related('abstract')
+        human_capacities = HumanCapacity.objects.select_related('country')
 
         projects = Project.objects.select_related('country').prefetch_related(
             Prefetch('projectfunding_set', 
@@ -109,6 +110,7 @@ class GedDataAPI(APIView):
         # Serialize data
         serialized_data = {
             'countries': CountrySerializer(countries, many=True).data,
+            'human_capacities': HumanCapacitySerializer(human_capacities, many=True).data,
             'projects': ProjectSerializer(projects, many=True).data,
             'organizations': OrganizationSerializer(
                 Organization.objects.select_related('country'), many=True).data,
@@ -122,8 +124,6 @@ class GedDataAPI(APIView):
                 Equipement.objects.all(), many=True).data,
             'funding_sources': FundingSourceSerializer(
                 FundingSource.objects.select_related('country'), many=True).data,
-            'human_capacities': HumanCapacitySerializer(
-                HumanCapacity.objects.select_related('country'), many=True).data,
             'project_fundings': ProjectFundingSerializer(
                 ProjectFunding.objects.select_related('project', 'organization_funding'), 
                 many=True).data,
