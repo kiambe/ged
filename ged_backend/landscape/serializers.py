@@ -18,6 +18,12 @@ class OrganizationSerializer(serializers.ModelSerializer):
         model = Organization
         fields = '__all__'
 
+
+class AbstractSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Abstract
+        fields = '__all__'
+
 class RegulatoryFrameworkSerializer(serializers.ModelSerializer):
     country = CountrySerializer(read_only=True)
     country_id = serializers.PrimaryKeyRelatedField(
@@ -177,3 +183,57 @@ class LiteratureSerializer(serializers.ModelSerializer):
         if obj.document_file:
             return self.context['request'].build_absolute_uri(obj.document_file.url)
         return None
+
+
+
+
+class CombinedCountryDataSerializer(serializers.Serializer):
+    # Country data
+    country = CountrySerializer()
+    
+    # Related data
+    organizations = OrganizationSerializer(many=True)
+    regulatory_frameworks = RegulatoryFrameworkSerializer(many=True)
+    funding_sources = FundingSourceSerializer(many=True)
+    human_capacity = HumanCapacitySerializer()
+    abstract = AbstractSerializer()
+    
+    # Projects and related data
+    projects = serializers.SerializerMethodField()
+    
+    # Organism data
+    country_ged_organisms = serializers.SerializerMethodField()
+    literature = LiteratureSerializer(many=True)
+
+    def get_projects(self, obj):
+        projects = Project.objects.filter(country=obj)
+        project_data = []
+        
+        for project in projects:
+            project_serializer = ProjectSerializer(project)
+            project_data.append({
+                **project_serializer.data,
+                'funding_sources': ProjectFundingSerializer(
+                    ProjectFunding.objects.filter(project=project),
+                    many=True
+                ).data,
+                'project_organisms': ProjectOrganismSerializer(
+                    ProjectOrganism.objects.filter(project=project),
+                    many=True
+                ).data
+            })
+        return project_data
+
+    def get_country_ged_organisms(self, obj):
+        organisms = CountryGedOrganism.objects.filter(country=obj)
+        organism_data = []
+        
+        for organism in organisms:
+            organism_serializer = CountryGedOrganismSerializer(organism)
+            organism_data.append({
+                **organism_serializer.data,
+                'ged_organism_details': GedOrganismSerializer(
+                    organism.ged_organism
+                ).data
+            })
+        return organism_data

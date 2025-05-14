@@ -23,6 +23,12 @@ class RegulatoryFrameworkAdmin(ImportExportModelAdmin):
     list_display = ('country', 'has_ged_policy', 'year_enacted_published')  # Removed 'last_updated'
 
 
+@admin.register(Abstract)
+class AbstractAdmin(ImportExportModelAdmin):
+    list_display = ('country', 'description')  
+
+
+
 @admin.register(GedOrganism)
 class GedOrganismAdmin(ImportExportModelAdmin):
     list_display = ('common_name', 'scientific_name')  # Removed 'image_preview'

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,8 +26,9 @@ SECRET_KEY = 'django-insecure-qxeemf%u$m*a#c@gan(qdx67b9dxq6!)2^afwci3h@#zkav#&c
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+#ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ['data.genome.africa', 'localhost', '127.0.0.1']
+#CORS_ALLOWED_ORIGINS = ["https://data.genome.africa",  "http://data.genome.africa"]
 
 # Application definition
 
@@ -41,12 +43,15 @@ INSTALLED_APPS = [
     'import_export',
     'rest_framework',
     'django_filters',
-
+    'corsheaders',
     'landscape',
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
+'corsheaders.middleware.CorsMiddleware',
+   # 'django.middleware.common.CommonMiddleware',
+    
+'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -132,6 +137,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+# Add this to define where static files will be collected
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+MEDIA_URL = '/media/'  # URL to access media files
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -150,6 +159,20 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
 }
+#CORS_ALLOW_ALL_ORIGINS = True
+CSRF_TRUSTED_ORIGINS = [
+    'https://data.genome.africa',
+    'https://www.data.genome.africa',
+]
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+CSRF_COOKIE_SECURE = True  # Only send CSRF cookie over HTTPS
+SESSION_COOKIE_SECURE = True  # Only send session cookie over HTTPS
+
+
+
+
+
+#CORS_ALLOWED_ORIGINS = ["https://data.genome.africa",  "http://data.genome.africa"]
  
 # REST_FRAMEWORK = {
 #     'DEFAULT_PERMISSION_CLASSES': [

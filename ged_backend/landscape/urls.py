@@ -16,6 +16,8 @@ router.register(r'project-fundings', views.ProjectFundingViewSet)
 router.register(r'project-organisms', views.ProjectOrganismViewSet)
 router.register(r'country-ged-organisms', views.CountryGedOrganismViewSet)
 router.register(r'literature', views.LiteratureViewSet)
+router.register(r'abstract', views.AbstractViewSet)
+router.register(r'combined-data', views.CombinedDataViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

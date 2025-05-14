@@ -3,7 +3,7 @@ from django.db import models
 class Country(models.Model):
     name = models.CharField(max_length=100, unique=True)
     country_code = models.CharField(max_length=3, unique=True)
-    region = models.CharField(max_length=100, unique=True)
+    region = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
@@ -48,6 +48,12 @@ class GedOrganism(models.Model):
         return f"{self.common_name} Ged Organism"
 
 
+class Abstract(models.Model):
+    country = models.OneToOneField(Country, on_delete=models.CASCADE)
+    description = models.TextField(blank=True, null=True)
+    def __str__(self):
+        return f"{self.description} Abstract"
+
 
 
 class DevelopmentStage(models.Model):
@@ -72,7 +78,7 @@ class FundingSource(models.Model):
         return f"{self.name} ({self.country.name})"
 
 class HumanCapacity(models.Model):
-    country = models.OneToOneField(Country, on_delete=models.CASCADE)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE)
     num_biotech_experts = models.IntegerField(default=0)
     num_gene_editing_specialists = models.IntegerField(default=0)
     num_research_students = models.IntegerField(default=0)
@@ -89,15 +95,33 @@ class Equipement(models.Model):
 
 
 class Project(models.Model):    
-    name = models.CharField(max_length=100, unique=True)
-    country = models.OneToOneField(Country, on_delete=models.CASCADE)
-    nature_of_partnership = models.CharField(max_length=100, unique=True)
-    project_duration = models.IntegerField(default=0)
-    start_date = models.DateField(blank=True, null=True)
-    end_date = models.DateField(blank=True, null=True)
+    name = models.CharField(max_length=300, unique=True)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE)
+    nature_of_partnership = models.CharField(max_length=100, blank=True, null=True, choices=[
+        ('Public-Private Partnership (PPP)', 'Public-Private Partnership (PPP)'),
+        ('Public-Public Partnership (PuP)', 'Public-Public Partnership (PuP)'),
+        ('Private-Private Partnership (PrP)', 'Private-Private Partnership (PrP)'),
+        ('Public-Academic Partnership', 'Public-Academic Partnership'),
+        ('Private-Academic Partnership', 'Private-Academic Partnership'),
+        ('Public-Civil Society Partnership', 'Public-Civil Society Partnership'),
+        ('Multistakeholder Partnerships (MSP)', 'Multistakeholder Partnerships (MSP)'),
+        ('Donor-Government Partnership', 'Donor-Government Partnership'),
+        ('Public-Development Finance Institution (DFI) Partnership', 'Public-Development Finance Institution (DFI) Partnership'),
+        ('Research-Industry Partnership', 'Research-Industry Partnership'),
+        ('Intergovernmental Partnerships', 'Intergovernmental Partnerships'),
+        ('Public-International Organization Partnership', 'Public-International Organization Partnership'),
+        
+    ])
+    start_year =models.IntegerField(default=1990, blank=True, null=True)
+    end_year =models.IntegerField(default=1900, blank=True, null=True)
+    status = models.CharField(max_length=100, blank=True, null=True, choices=[
+        ('Not started)', 'Not started'),
+        ('Started', 'Started'),
+	('Ongoing', 'Ongoing'),
+        ('Completed', 'Completed'), ])    
 
     def __str__(self):
-        return f"{self.country.name} Project"
+        return f"{self.name} Project"
 
 class ProjectFunding(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -110,7 +134,7 @@ class ProjectOrganism(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     organism = models.ForeignKey(GedOrganism, on_delete=models.CASCADE)     
     trait = models.CharField(max_length=255, blank=True, null=True)
-    technology = models.ForeignKey(Equipement, on_delete=models.CASCADE)
+    technology = models.ForeignKey(Equipement, on_delete=models.CASCADE, blank=True, null=True)
     development_stage = models.ForeignKey(DevelopmentStage, on_delete=models.CASCADE)   
     def __str__(self):
         return f"{self.project.name} Project Organism"
