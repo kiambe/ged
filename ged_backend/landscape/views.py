@@ -116,12 +116,12 @@ class GedDataAPI(APIView):
                 Organization.objects.select_related('country'), many=True).data,
             'regulatory_frameworks': RegulatoryFrameworkBasicSerializer(
                 RegulatoryFramework.objects.select_related('country'), many=True).data,
-            'ged_organisms': GedOrganismBasicSerializer(
-                GedOrganism.objects.all(), many=True).data,
-            'development_stages': DevelopmentStageBasicSerializer(
-                DevelopmentStage.objects.all(), many=True).data,
-            'equipements': EquipementBasicSerializer(
-                Equipement.objects.all(), many=True).data,
+            # 'ged_organisms': GedOrganismBasicSerializer(
+            #     GedOrganism.objects.all(), many=True).data,
+            # 'development_stages': DevelopmentStageBasicSerializer(
+            #     DevelopmentStage.objects.all(), many=True).data,
+            # 'equipements': EquipementBasicSerializer(
+            #     Equipement.objects.all(), many=True).data,
             'funding_sources': FundingSourceSerializer(
                 FundingSource.objects.select_related('country'), many=True).data,
             'project_fundings': ProjectFundingSerializer(
@@ -134,8 +134,8 @@ class GedDataAPI(APIView):
             'country_ged_organisms': CountryGedOrganismBasicSerializer(
                 CountryGedOrganism.objects.select_related('country', 'ged_organism'), 
                 many=True).data,
-            'literatures': LiteratureSerializer(
-                Literature.objects.select_related('country'), many=True).data,
+            # 'literatures': LiteratureSerializer(
+            #     Literature.objects.select_related('country'), many=True).data,
         }
 
         return Response(serialized_data, status=status.HTTP_200_OK)
