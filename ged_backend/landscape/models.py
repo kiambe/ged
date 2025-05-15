@@ -4,6 +4,9 @@ class Country(models.Model):
     name = models.CharField(max_length=100, unique=True)
     country_code = models.CharField(max_length=3, unique=True)
     region = models.CharField(max_length=100)
+    class Meta:
+        verbose_name = "Country"  # Singular name
+        verbose_name_plural = "Countries"  # Plural name
 
     def __str__(self):
         return self.name
@@ -17,7 +20,12 @@ class Organization(models.Model):
         ('university', 'University'),
         ('research', 'Research'),
         ('private_sector', 'Private Sector'), 
-        ('development_agency', 'Development Agency'),       
+        ('development_agency', 'Development Agency'), 
+        ('igo', 'International Organization'),   
+        ('regional_organization', 'Regional Organization'),  
+        ('funding', 'Funding'),    
+        ('cso', 'Civil Society Organization'),
+
     ]
     type = models.CharField(
         max_length=20,
@@ -26,6 +34,11 @@ class Organization(models.Model):
         verbose_name='Organization Type' # Optional: Human-readable name for the field
     )
     focus_area_in_ged = models.TextField(blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Organization"  # Singular name
+        verbose_name_plural = "Organizations"  # Plural name
+
     def __str__(self):
         return self.name
 
@@ -37,22 +50,39 @@ class RegulatoryFramework(models.Model):
     RegulatorStatus = models.TextField(blank=True, null=True)
     framework_summary = models.TextField(blank=True, null=True)
     year_enacted_published = models.DateField(blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Regulatory Framework"  # Singular name
+        verbose_name_plural = "Regulatory Frameworks"  # Plural name
+
     def __str__(self):
-        return f"{self.name} Regulatory Framework"
+        return f"{self.name}"
 
 class GedOrganism(models.Model):
     common_name = models.CharField(max_length=255, blank=True, null=True)
     scientific_name = models.CharField(max_length=255, blank=True, null=True)
     image = models.ImageField(upload_to='images/')
+
+    class Meta:
+        verbose_name = "GEd Organism"  # Singular name
+        verbose_name_plural = "GEd Organisms"  # Plural name
+    
     def __str__(self):
-        return f"{self.common_name} Ged Organism"
+        return f"{self.common_name}"
+
 
 
 class Abstract(models.Model):
     country = models.OneToOneField(Country, on_delete=models.CASCADE)
     description = models.TextField(blank=True, null=True)
+
+    
+    class Meta:
+        verbose_name = "Abstract"  # Singular name
+        verbose_name_plural = "Abstracts"  # Plural name
+
     def __str__(self):
-        return f"{self.description} Abstract"
+        return f"{self.description}"
 
 
 
@@ -60,7 +90,7 @@ class DevelopmentStage(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     def __str__(self):
-        return f"{self.name} Development Stage"
+        return f"{self.name}"
 
 
 class FundingSource(models.Model):
@@ -83,15 +113,26 @@ class HumanCapacity(models.Model):
     num_gene_editing_specialists = models.IntegerField(default=0)
     num_research_students = models.IntegerField(default=0)
 
+    
+    class Meta:
+        verbose_name = "Human Capacity"  # Singular name
+        verbose_name_plural = "Human Capacities"  # Plural name
+
     def __str__(self):
-        return f"{self.country.name} Human Capacity"
+        return f"{self.country.name}"
 
 class Equipement(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='images/')
+
+    
+    class Meta:
+        verbose_name = "Equipement"  # Singular name
+        verbose_name_plural = "Equipement"  # Plural name
+
     def __str__(self):
-        return f"{self.name} Equipement"
+        return f"{self.name}"
 
 
 class Project(models.Model):    
@@ -128,7 +169,7 @@ class ProjectFunding(models.Model):
     organization_funding = models.ForeignKey(Organization, on_delete=models.CASCADE)     
     amount_in_usd = models.FloatField(default=0.0)
     def __str__(self):
-        return f"{self.project.name} Project Funding"
+        return f"{self.project.name}"
 
 class ProjectOrganism(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -137,7 +178,7 @@ class ProjectOrganism(models.Model):
     technology = models.ForeignKey(Equipement, on_delete=models.CASCADE, blank=True, null=True)
     development_stage = models.ForeignKey(DevelopmentStage, on_delete=models.CASCADE)   
     def __str__(self):
-        return f"{self.project.name} Project Organism"
+        return f"{self.project.name}"
 
 
 
@@ -160,7 +201,12 @@ class CountryGedOrganism(models.Model):
 class Literature(models.Model):
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
     document_file = models.FileField(upload_to='documents/')
+
+    class Meta:
+        verbose_name = "Literature"  # Singular name
+        verbose_name_plural = "Literature"  # Plural name
+
     def __str__(self):
-        return f"{self.country} Literature"
+        return f"{self.country}"
 
 

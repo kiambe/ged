@@ -20,7 +20,7 @@ class OrganizationAdmin(ImportExportModelAdmin):
 
 @admin.register(RegulatoryFramework)
 class RegulatoryFrameworkAdmin(ImportExportModelAdmin):
-    list_display = ('country', 'has_ged_policy', 'year_enacted_published')  # Removed 'last_updated'
+    list_display = ('name', 'country', 'has_ged_policy', 'year_enacted_published')  # Removed 'last_updated'
 
 
 @admin.register(Abstract)
