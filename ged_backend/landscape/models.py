@@ -22,13 +22,14 @@ class Organization(models.Model):
         ('private_sector', 'Private Sector'), 
         ('development_agency', 'Development Agency'), 
         ('igo', 'International Organization'),   
-        ('regional_organization', 'Regional Organization'),  
+        ('regional_organization', 'Regional Organization'),
+        ('continetal', 'Continental Organization'),  
         ('funding', 'Funding'),    
         ('cso', 'Civil Society Organization'),
 
     ]
     type = models.CharField(
-        max_length=20,
+        max_length=100,
         choices=ORGANIZATION_TYPE_CHOICES,
         default='government',  # Optional: Set a default value
         verbose_name='Organization Type' # Optional: Human-readable name for the field
