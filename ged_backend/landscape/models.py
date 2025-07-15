@@ -45,7 +45,7 @@ class Organization(models.Model):
 
 class RegulatoryFramework(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True) 
-    country = models.ForeignKey(Country, on_delete=models.CASCADE)     
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name='landscape_regulatory_framework')     
     KeyAuthorityLegislation = models.TextField(blank=True, null=True)
     has_ged_policy = models.BooleanField(default=False)   
     RegulatorStatus = models.TextField(blank=True, null=True)

@@ -25,4 +25,5 @@ admin.site.index_title = settings.ADMIN_INDEX_TITLE
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('landscape.urls')),
+    path('graphs-api/', include('graphs.urls')),
 ]
